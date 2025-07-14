@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nim Solver</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/styles.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-700 min-h-screen flex items-center justify-center p-4 font-inter text-gray-100">
+
+    <div id="game-container" class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-700 flex flex-col space-y-6">
+        <h1 class="text-4xl font-bold text-center text-green-400 mb-6">Nim Solver</h1>
+
+        <!-- Message Display Area -->
+        <div id="message-display" class="bg-gray-700 p-4 rounded-lg text-center text-lg font-medium text-blue-300 min-h-[4rem] flex items-center justify-center shadow-inner">
+            Welcome to Nim! Start a new game.
+        </div>
+
+        <!-- Start Game Section -->
+        <div id="start-game-section" class="space-y-4">
+            <div class="flex flex-col space-y-3">
+                <label for="num-piles" class="text-lg font-semibold">Number of Piles (at least 2):</label>
+                <input type="number" id="num-piles" min="2" value="2"
+                       class="p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-100 placeholder-gray-400">
+            </div>
+            <div id="pile-size-inputs" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Pile size inputs will be dynamically added here by JavaScript -->
+            </div>
+            <button id="start-game-btn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                Start Game
+            </button>
+        </div>
+
+        <!-- Game Play Section -->
+        <div id="game-play-section" class="hidden space-y-6">
+            <div class="text-center text-2xl font-semibold text-yellow-300">
+                Current Player: <span id="current-player">1</span>
+            </div>
+
+            <!-- Piles Display -->
+            <div id="piles-display" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-700 rounded-lg shadow-inner border border-gray-600">
+                <!-- Piles will be rendered here -->
+            </div>
+
+            <!-- Player Action Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="col-span-full text-lg font-semibold text-center text-blue-300">Make Your Move:</div>
+                <div class="flex flex-col space-y-3">
+                    <label for="move-pile-index" class="text-md">Pile Number:</label>
+                    <input type="number" id="move-pile-index" min="1"
+                           class="p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 placeholder-gray-400">
+                </div>
+                <div class="flex flex-col space-y-3">
+                    <label for="move-number-to-remove" class="text-md">Objects to Remove:</label>
+                    <input type="number" id="move-number-to-remove" min="1"
+                           class="p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 placeholder-gray-400">
+                </div>
+                <button id="make-move-btn"
+                        class="col-span-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Make Move
+                </button>
+            </div>
+
+            <!-- Game Control Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button id="computer-move-btn"
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Let Computer Move
+                </button>
+                <button id="undo-move-btn"
+                        class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Undo Last Move
+                </button>
+                <button id="restart-game-btn"
+                        class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Restart Current Game
+                </button>
+                <button id="new-game-btn"
+                        class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Start New Game
+                </button>
+                <button id="quit-game-btn"
+                        class="col-span-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Quit Program
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal for Alerts/Confirmations -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-sm w-full text-center border border-gray-700">
+            <p id="modal-message" class="text-lg font-semibold text-gray-100 mb-6"></p>
+            <div id="modal-buttons" class="flex justify-center space-x-4">
+                <button id="modal-ok-btn"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    OK
+                </button>
+                <button id="modal-cancel-btn"
+                        class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
