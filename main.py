@@ -164,46 +164,44 @@ class Game:
         # This part should theoretically not be reached if current_nim_sum is non-zero and piles exist.
         return None
 
+    def get_integer_input(self, prompt, min_val=None, max_val=None):
+        """
+        Helper function to get validated integer input from the user.
 
-def get_integer_input(prompt, min_val=None, max_val=None):
-    """
-    Helper function to get validated integer input from the user.
+        Args:
+            prompt (str): The message to display to the user.
+            min_val (int, optional): The minimum allowed integer value. Defaults to None.
+            max_val (int, optional): The maximum allowed integer value. Defaults to None.
 
-    Args:
-        prompt (str): The message to display to the user.
-        min_val (int, optional): The minimum allowed integer value. Defaults to None.
-        max_val (int, optional): The maximum allowed integer value. Defaults to None.
+        Returns:
+            int: The validated integer input.
+        """
+        while True:
+            try:
+                value = int(input(prompt))
+                if min_val is not None and value < min_val:
+                    print(f"Please enter a value of at least {min_val}.")
+                elif max_val is not None and value > max_val:
+                    print(f"Please enter a value of at most {max_val}.")
+                else:
+                    return value
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
 
-    Returns:
-        int: The validated integer input.
-    """
-    while True:
-        try:
-            value = int(input(prompt))
-            if min_val is not None and value < min_val:
-                print(f"Please enter a value of at least {min_val}.")
-            elif max_val is not None and value > max_val:
-                print(f"Please enter a value of at most {max_val}.")
-            else:
-                return value
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
+    def get_piles_input(self):
+        """
+        Prompts the user to enter the number of piles and the size of each pile.
 
-
-def get_piles_input():
-    """
-    Prompts the user to enter the number of piles and the size of each pile.
-
-    Returns:
-        list: A list of integers representing the sizes of the piles.
-    """
-    while True:
-        num_piles = get_integer_input("How many piles do you want to start with (at least 2)? ", min_val=2)
-        piles = []
-        for i in range(num_piles):
-            pile_size = get_integer_input(f"Enter size for Pile {i + 1}: ", min_val=1)
-            piles.append(pile_size)
-        return piles
+        Returns:
+            list: A list of integers representing the sizes of the piles.
+        """
+        while True:
+            num_piles = self.get_integer_input("How many piles do you want to start with (at least 2)? ", min_val=2)
+            piles = []
+            for i in range(num_piles):
+                pile_size = self.get_integer_input(f"Enter size for Pile {i + 1}: ", min_val=1)
+                piles.append(pile_size)
+            return piles
 
 
 def main():
@@ -217,13 +215,13 @@ def main():
         print("\n--- Main Menu ---")
         print("1. Start a new game")
         print("2. Quit")
-        main_choice = get_integer_input("Enter your choice: ", min_val=1, max_val=2)
+        main_choice = game.get_integer_input("Enter your choice: ", min_val=1, max_val=2)
 
         if main_choice == 2:
             print("Thanks for playing! Goodbye.")
             break  # Exit the main program loop
         elif main_choice == 1:
-            initial_piles = get_piles_input()
+            initial_piles = game.get_piles_input()
             if not game.start(initial_piles):
                 # If game.start returns False, it means input was invalid, so loop back to main menu
                 continue
@@ -245,21 +243,22 @@ def main():
                 print("4. Restart current game")
                 print("5. Start a new game (back to main menu)")
                 print("6. Quit program")
-                player_action_choice = get_integer_input("Enter your choice: ", min_val=1, max_val=6)
+                player_action_choice = game.get_integer_input("Enter your choice: ", min_val=1, max_val=6)
 
                 if player_action_choice == 1:  # Make a move
                     if not game.piles:
                         print("No piles left to make a move from. Game is over.")
                         continue
                     while True:
-                        pile_index = get_integer_input(f"Enter pile number to remove from (1 to {len(game.piles)}): ",
-                                                       min_val=1, max_val=len(game.piles)) - 1
+                        pile_index = game.get_integer_input(f"Enter pile number to remove from (1 to "
+                                                            f"{len(game.piles)}): ",
+                                                            min_val=1, max_val=len(game.piles)) - 1
                         # Ensure the chosen pile still exists and has objects
                         if pile_index >= len(game.piles) or game.piles[pile_index] == 0:
                             print("Invalid pile selected. Please choose an existing pile with objects.")
                             continue
 
-                        number_to_remove = get_integer_input(
+                        number_to_remove = game.get_integer_input(
                             f"Enter number of objects to remove from Pile {pile_index + 1} "
                             f"(1 to {game.piles[pile_index]}): ",
                             min_val=1, max_val=game.piles[pile_index])
